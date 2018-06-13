@@ -1,0 +1,10 @@
+---
+- name: Apply Tokyo Template
+  ios_config:
+    src: common.j2
+    provider: "{{ cli }}"
+  tags: Tokyo
+  when: inventory_hostname | search ("tok")
+
+  notify:
+    - write config

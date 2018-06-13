@@ -1,0 +1,6 @@
+---
+## Testing environment
+- hosts: testing
+  become: true
+  roles:
+    - puppet_agent

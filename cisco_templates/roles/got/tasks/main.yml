@@ -1,0 +1,10 @@
+---
+- name: Apply Gothenburg Template
+  ios_config:
+    src: common.j2
+    provider: "{{ cli }}"
+  tags: Gothenburg
+  when: inventory_hostname | search ("got")
+
+  notify:
+    - write config

@@ -1,0 +1,10 @@
+---
+- name: Apply Paris Template
+  ios_config:
+    src: common.j2
+    provider: "{{ cli }}"
+  tags: Paris
+  when: inventory_hostname | search ("par")
+
+  notify:
+    - write config

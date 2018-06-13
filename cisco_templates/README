@@ -1,0 +1,86 @@
+## Readme file
+
+** This utility helps with managing Cisco IOS configuration over SSH. This is particularly useful for managing devices that share a common template. It's worth mentioning that this module isn’t intelligent enough to determine the risk associated with a command, 
+   thus should be used with caution.
+
+** Variables such as "enable secret" or timeout values can be set in group_vars/all.yml file. Don't use it to store any login credentials, but rather use -k -u parameters to pass username/password when running the playbook.
+
+** The site.yml playbook is associated with "common" role/template and should be used to configure settings that are same across entire domain (such as snmp community value, local usernames etc.). Always review this template before applying it to any group of devices!
+
+** IOS templates are stored and can be modified in roles/[common|office]/templates/common.j2 
+
+** Inventory files are self-explanatory. Grouping the devices [access_switches|core_switches] can be useful for tageting the specific group eg. --limit access_switches
+
+** Examples
+
+ Note: Always review your template before deploying it to the device
+
+ a) Tokyo template 
+
+    Edit: roles/tok/templates/common.j2
+
+    Run: ~/ansible/cisco_templates$ ansible-playbook -i inventory/tok tok.yml -k -u pavel-admin
+
+    where -i = inventory file
+        -k = ask for ssh paswword
+        -u = username
+        tok.yml = playbook yml file
+
+    With a filter to only target access layer swithes
+
+    Run: ~/ansible/cisco_templates$ ansible-playbook -i inventory/tok tok.yml -k -u pavel-admin --limit access_switches
+   
+    
+
+ b) Deplying a shared configuration to all DMVPN routers
+
+    Edit: roles/common/templates/common.j2     
+    
+    Run: ~/ansible/cisco_templates$ ansible-playbook -i inventory/dmvpn_routers site.yml -k -u pavel-admin
+
+    Example result: 
+	SSH password: 
+
+	PLAY [Cisco Unified Config] **************************************************************************************************
+
+	TASK [common : Apply Common Template] ****************************************************************************************
+	ok: [parrtr01]
+	ok: [ldcrtr03]
+	ok: [vcertr01]
+	ok: [tokrtr01]
+	ok: [ldcrtr02]
+	ok: [gotrtr01]
+	ok: [sjcrtr01]
+	ok: [shartr01]
+	ok: [sportr01]
+	changed: [shartr02]
+
+	RUNNING HANDLER [writecfg : write config] ************************************************************************************
+	ok: [shartr02]
+
+	PLAY RECAP *******************************************************************************************************************
+	gotrtr01                   : ok=1    changed=0    unreachable=0    failed=0   
+	ldcrtr02                   : ok=1    changed=0    unreachable=0    failed=0   
+	ldcrtr03                   : ok=1    changed=0    unreachable=0    failed=0   
+	parrtr01                   : ok=1    changed=0    unreachable=0    failed=0   
+	shartr01                   : ok=1    changed=0    unreachable=0    failed=0   
+	shartr02                   : ok=2    changed=1    unreachable=0    failed=0   
+	sjcrtr01                   : ok=1    changed=0    unreachable=0    failed=0   
+	sportr01                   : ok=1    changed=0    unreachable=0    failed=0   
+	tokrtr01                   : ok=1    changed=0    unreachable=0    failed=0   
+	vcertr01                   : ok=1    changed=0    unreachable=0    failed=0  
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+

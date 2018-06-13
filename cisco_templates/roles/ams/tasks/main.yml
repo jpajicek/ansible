@@ -1,0 +1,10 @@
+---
+- name: Apply Amsterdam Template
+  ios_config:
+    src: common.j2
+    provider: "{{ cli }}"
+  tags: Amsterdam
+  when: inventory_hostname | search ("ams")
+
+  notify:
+    - write config

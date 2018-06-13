@@ -1,0 +1,10 @@
+---
+- name: Apply Berlin Template
+  ios_config:
+    src: common.j2
+    provider: "{{ cli }}"
+  tags: Berlin
+  when: inventory_hostname | search ("ber")
+
+  notify:
+    - write config

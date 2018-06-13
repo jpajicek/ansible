@@ -1,0 +1,10 @@
+---
+- name: Apply Shanghai Template
+  ios_config:
+    src: common.j2
+    provider: "{{ cli }}"
+  tags: Shanghai
+  when: inventory_hostname | search ("sha")
+
+  notify:
+    - write config

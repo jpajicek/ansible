@@ -1,0 +1,4 @@
+---
+ansible_ssh_user: admin
+puppet_agent_version: '5.1.0'
+puppetmaster: 'puppet.co'

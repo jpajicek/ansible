@@ -1,0 +1,19 @@
+This is Puppet(5.x) agent installer using Ansible  
+
+Currently supports:
+ - Ubuntu 16
+ - CentOS 7
+
+## How to use
+
+1. Update the host file with server(s) that need to be bootstrapped with Puppet
+
+2. Set package version in group_vars/all.yml [optional]
+
+3. Run Ansible Playbook 
+
+a) For testing environemt run: 
+   $ ansible-playbook -i hosts testing.yml -K -k
+
+b) For production environment run: 
+   $ ansible-playbook -i hosts production.yml -K -k

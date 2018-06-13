@@ -1,0 +1,9 @@
+---
+- name: Apply Common Template
+  ios_config:
+    src: common.j2
+    provider: "{{ cli }}"
+  tags: Common
+
+  notify:
+    - write config

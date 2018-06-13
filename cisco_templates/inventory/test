@@ -1,0 +1,9 @@
+## Test device(s); not in use
+[routers]
+rtr01 ansible_host=1.1.1.1
+
+[access_switches]
+
+[core_switches]
+
+

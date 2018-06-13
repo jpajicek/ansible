@@ -1,0 +1,10 @@
+---
+- name: Apply Milan Template
+  ios_config:
+    src: common.j2
+    provider: "{{ cli }}"
+  tags: Milan
+  when: inventory_hostname | search ("mil")
+
+  notify:
+    - write config

@@ -1,0 +1,10 @@
+---
+- name: Apply Sao Paulo Template
+  ios_config:
+    src: common.j2
+    provider: "{{ cli }}"
+  tags: Sao Paulo
+  when: inventory_hostname | search ("spo")
+
+  notify:
+    - write config

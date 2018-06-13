@@ -1,0 +1,10 @@
+---
+- name: Apply Gurgaon Template
+  ios_config:
+    src: common.j2
+    provider: "{{ cli }}"
+  tags: Gurgaon
+  when: inventory_hostname | search ("gur")
+
+  notify:
+    - write config

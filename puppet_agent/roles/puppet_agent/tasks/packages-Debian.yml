@@ -1,0 +1,20 @@
+---
+
+- name: Download Repository Package [Debian] 
+  get_url:
+    url: https://apt.puppetlabs.com/puppet5-release-{{ ansible_distribution_release }}.deb
+    dest: /tmp/puppet5.deb
+
+
+- name: Add Repository [Debian]
+  apt: deb={{ item }} state=present force=yes
+  with_items: "/tmp/puppet5.deb"
+
+
+- name: Update apt cache [Debian]
+  apt: update_cache=yes
+
+
+- name: Install Puppet Agent [Debian]
+  apt: name={{ item }}  state=present
+  with_items: "puppet-agent={{ puppet_agent_version }}-1{{ ansible_distribution_release }}"

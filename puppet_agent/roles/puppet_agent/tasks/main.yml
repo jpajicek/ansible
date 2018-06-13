@@ -1,0 +1,23 @@
+---
+
+## Install Puppet Agent 
+- include: "packages-{{ ansible_os_family }}.yml"
+
+
+## Create Puppet Config
+- name: Create Puppet Config
+  template:
+    src: puppet.conf.j2
+    dest: /etc/puppetlabs/puppet/puppet.conf 
+    owner: root
+    group: root
+    mode: 0644
+
+## Puppet Run
+- name: Run Puppet Agent
+  command: /opt/puppetlabs/bin/puppet agent -t --noop
+  register: puppet_output
+
+## Puppet Output
+- name: Show Ouppet Output
+  debug: msg="{{ puppet_output.stdout_lines }}"

@@ -1,0 +1,10 @@
+---
+- name: Apply London Datacenter Template
+  ios_config:
+    src: common.j2
+    provider: "{{ cli }}"
+  tags: London Datacenter
+  when: inventory_hostname | search ("ldc")
+
+  notify:
+    - write config

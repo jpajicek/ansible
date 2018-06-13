@@ -1,0 +1,8 @@
+---
+## Don't store passwords in here, use -k
+
+username: "admin"    
+password: ""
+secret: ""
+use_secret: no
+timeout: 15

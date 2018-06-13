@@ -1,0 +1,6 @@
+---
+## Production environment
+- hosts: production
+  become: true
+  roles:
+    - puppet_agent
