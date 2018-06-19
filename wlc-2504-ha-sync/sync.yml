@@ -1,0 +1,86 @@
+---
+-  hosts: all
+   gather_facts: yes
+   connection: local
+
+   vars_files:
+   - group_vars/database/vars.yml
+   - group_vars/database/vault.yml
+ 
+   tasks:
+     - name: GET CONFIGS
+       aireos_command:
+         provider:  "{{ creds }}"
+         commands:
+           - "transfer upload datatype config"
+           - "transfer upload mode {{ wlc_transfer_mode }}"
+           - "transfer upload username {{ wlc_transfer_username }}"
+           - "transfer upload serverip {{ wlc_transfer_serverip }}"
+           - "transfer upload port 22"
+           - "transfer upload filename AIR-{{ inventory_hostname }}.cfg"
+           - "transfer upload path {{ wlc_transfer_path }}" 
+           - command: transfer upload start
+             prompt: "Are you sure you want to start\\? \\(y\\/N\\)"
+             answer: y
+         wait_for: result[7] contains "File transfer operation completed successfully"
+
+     - name: CREATE CANDIDATE CONFIG
+       when: inventory_hostname in groups['primary']
+       copy:
+         src: "{{ wlc_transfer_path }}/AIR-{{ inventory_hostname }}.cfg"
+         dest: "{{ wlc_transfer_path }}/candidate_config.j2"
+
+     - name: DELETE FROM CANDIDATE CONFIG
+       when: inventory_hostname in groups['secondary']
+       replace:
+         path: "{{ wlc_transfer_path }}/candidate_config.j2"
+         regexp: "{{ item }}"
+         replace: ''
+       with_items:
+         - '^config serial timeout.*'
+         - '^config advanced backup-controller primary.*'
+
+     - name: SET SYSNAME
+       when: inventory_hostname in groups['secondary']
+       replace:
+         path: "{{ wlc_transfer_path }}/candidate_config.j2"
+         regexp: '^config sysname (\S+)'
+         replace: 'config sysname \1-HA'
+
+     - name: CHANGE MANAGEMENT IP
+       when: inventory_hostname in groups['secondary']
+       replace:
+         path: "{{ wlc_transfer_path }}/candidate_config.j2"
+         regexp: "config interface address management.*"
+         replace: "config interface address management {{ wlc_secondary_mgmt_ip }} {{ wlc_secondary_mgmt_mask }} {{ wlc_secondary_mgmt_gw }}" 
+
+     - name: ADD MOBILITY GROUP
+       when: inventory_hostname in groups['secondary']
+       replace:
+         path: "{{ wlc_transfer_path }}/candidate_config.j2"
+         regexp: "config mobility group member add.*"
+         replace: "config mobility group member add {{ wlc_primary_mac }} {{ wlc_primary_mgmt_ip }} {{ wlc_mobilty_group }}"
+     
+     - name: CHANGE DYNAMIC INTERFACE IP(s)
+       when: inventory_hostname in groups['secondary']
+       replace:
+         path: "{{ wlc_transfer_path }}/candidate_config.j2"
+         regexp: '^config interface address dynamic-interface (\w\D+)\s(?P<IPPREFIX>\d{1,3}.\d{1,3}.\d{1,3}.)\d{1,3}\s(\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}\s\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3})'
+         replace: 'config interface address dynamic-interface \1 \g<IPPREFIX>254 \3'
+
+     - name: SYNC CONFIG TO SENCONDARY
+       when: inventory_hostname in groups['secondary']
+       aireos_command:
+         provider:  "{{ creds }}"
+         commands:
+           - "transfer download datatype config"
+           - "transfer download mode {{ wlc_transfer_mode }}"
+           - "transfer download username {{ wlc_transfer_username }}"
+           - "transfer download serverip {{ wlc_transfer_serverip }}"
+           - "transfer download port 22"
+           - "transfer download filename candidate_config.j2"
+           - "transfer download path {{ wlc_transfer_path }}"
+           - command: transfer download start
+             prompt: "Are you sure you want to start\\? \\(y\\/N\\)"
+             answer: y
+         

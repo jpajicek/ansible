@@ -1,0 +1,15 @@
+##
+
+Background:
+
+In terms of high availability the 2504 does not support SSO (Stateful Switch Over)
+The 2504 failover model is N+1. This means a Primary controller with a backup controller. There is no communication between the two controllers and they operate as standalone devices, so you have to configure them separately and license them 
+separately.
+
+Usage:
+
+$ ansible-playbook -i inventory/apac sync.yml --ask-vault-pass 
+
+Limitations:
+...
+

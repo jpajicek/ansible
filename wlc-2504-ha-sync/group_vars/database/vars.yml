@@ -1,0 +1,21 @@
+---
+creds:
+  username: wlc.backup
+  password: "{{ vault_wlc_password }}"
+  timeout: 300
+
+wlc_transfer_password: "{{ vault_wlc_transfer_password }}"
+
+wlc_primary_mgmt_ip: 10.10.240.11
+wlc_mobilty_group: DOMAIN-AP
+wlc_primary_mac: 00:42:5a:54:09:20
+
+wlc_secondary_mgmt_ip: 10.10.240.12
+wlc_secondary_mgmt_mask: 255.255.255.0
+wlc_secondary_mgmt_gw: 10.10.240.1
+
+wlc_transfer_mode: sftp
+wlc_transfer_username: pavel
+wlc_transfer_serverip: 10.2.21.15
+wlc_transfer_path: /tmp
+
